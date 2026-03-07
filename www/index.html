@@ -189,15 +189,6 @@
     .config-bar input { flex: 1; height: 28px; font-size: .8rem; }
     .config-bar .btn { height: 28px; padding: 0 12px; font-size: .76rem; }
 
-    /* ── Stats ── */
-    .stats { display: flex; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
-    .stat {
-      flex: 1; min-width: 110px; background: var(--surface);
-      border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
-      box-shadow: var(--shadow);
-    }
-    .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
-    .stat-label { font-size: .72rem; color: var(--muted); margin-top: 2px; }
 
     /* ── SVG icons ── */
     svg { display: block; }
@@ -266,18 +257,6 @@
     <button class="btn btn-ghost" onclick="checkHealth()">Test</button>
   </div>
 
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-value" id="stat-total">0</div>
-      <div class="stat-label">Total URLs</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="stat-today">0</div>
-      <div class="stat-label">Created Today</div>
-    </div>
-  </div>
 
   <!-- Create Form -->
   <div class="card">
@@ -390,7 +369,6 @@
       if (!r.ok) return;
       urls = await r.json();
       render();
-      updateStats();
     } catch {
       // silently fail — health check will show status
     }
@@ -573,14 +551,6 @@
     }).join('');
   }
 
-  function updateStats() {
-    const today = new Date().toDateString();
-    document.getElementById('stat-total').textContent = urls.length;
-
-    document.getElementById('stat-today').textContent = urls.filter(u =>
-      u.createdAt && new Date(u.createdAt).toDateString() === today
-    ).length;
-  }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
   function esc(s) {
