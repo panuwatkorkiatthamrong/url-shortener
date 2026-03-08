@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const { customAlphabet } = require('nanoid');
 
-const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 6);
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 6);
 const redis = require('./redis');
 
 const app = express();
