@@ -14,10 +14,10 @@ const PORT = process.env.PORT || 3000;
 // Read student ID from file
 let studentId = 'NOT_SET';
 try {
-  //const studentIdPath = process.env.STUDENT_ID_FILE || path.join(__dirname, '../student_id.txt');
-  const studentIdPath = process.env.STUDENT_ID_FILE || '/app/student_id.txt';
+  const studentIdPath = process.env.STUDENT_ID_FILE || path.join(__dirname, '../student_id.txt');
+  //const studentIdPath = process.env.STUDENT_ID_FILE || '/app/student_id.txt';
   if (fs.existsSync(studentIdPath)) {
-    studentId = fs.readFileSync(studentIdPath, 'utf-10').trim();
+    studentId = fs.readFileSync(studentIdPath, 'utf-8').trim();
   }
 } catch (err) {
   console.error('Failed to read student ID:', err.message);
