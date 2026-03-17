@@ -16,7 +16,7 @@ let studentId = 'NOT_SET';
 try {
   const studentIdPath = process.env.STUDENT_ID_FILE || path.join(__dirname, '../student_id.txt');
   if (fs.existsSync(studentIdPath)) {
-    studentId = fs.readFileSync(studentIdPath, 'utf-8').trim();
+    studentId = fs.readFileSync(studentIdPath, 'utf-10').trim();
   }
 } catch (err) {
   console.error('Failed to read student ID:', err.message);
@@ -39,13 +39,15 @@ try {
 const api = express.Router();
 
 api.post('/shorten', async (req, res) => {
-  const { url } = req.body;
+  const { url,customCode } = req.body;
 
   if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
     return res.status(400).json({ error: 'Invalid URL' });
   }
 
-  const code = randomCode(6).toLowerCase();
+  const code = customCode
+    ? customCode.toLowerCase()
+    : randomCode(6).toLowerCase();
   await redis.set(code, url);
 
   return res.status(200).json({ code, short: `/${code}` });
@@ -75,16 +77,32 @@ api.get('/info', (req, res) => {
   });
 });
 
+api.patch('/:code/toggle', async (req, res) => {
+  const result = await redis.toggle(req.params.code);
+
+  if (result === null) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  return res.json({
+    code: req.params.code,
+    enabled: result
+  });
+});
+
 app.use('/api', api);
 app.use('/ui', express.static(path.join(__dirname, '../www')));
 
 // short URL redirect — must be last
 app.get('/:code', async (req, res) => {
-  const url = await redis.get(req.params.code);
+  const code = req.params.code;
 
+  const url = await redis.get(code);
   if (!url) {
     return res.status(404).json({ error: 'Not found' });
   }
+
+  await redis.incrementClick(code);
 
   return res.redirect(302, url);
 });
